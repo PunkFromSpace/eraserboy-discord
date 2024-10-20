@@ -115,10 +115,14 @@ async def hello(ctx):
 
 # Test Command - For Reckless
 @bot.command()
-@commands.cooldown(1, 15, commands.BucketType.user)
 @is_reckless()
 async def hi(ctx):
     await ctx.send(f'Heyyyy, {ctx.author.mention}! EraserBoy is ONLINE. How are you, sweetheart?')
+
+@hi.error
+async def hi_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send("No no, that's for Reckless Devil only. Try \'!hello\' instead")
 
 # Bad Boy
 @bot.command()
