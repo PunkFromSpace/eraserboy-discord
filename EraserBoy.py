@@ -63,6 +63,8 @@ def is_reckless():
 
 @bot.event
 async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send(f"Hello, {ctx.author.mention}. Looks like you either spelled something wrong or are trying an invalid command. Try !help to see the command list.")
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send(f"Don't be a bad little thing now, {ctx.author.mention}. Only mommy and daddy allowed.")
 
@@ -107,6 +109,19 @@ async def on_guild_join(guild):
 '''
 
 # ----- COMMANDS DOWN HERE----------
+
+# Help Command
+@bot.command()
+async def help(ctx):
+    """List all available commands and their descriptions."""
+    help_message = "Here are the available commands:\n\n"
+    
+    for command in bot.commands:
+        # Ignore the help command to avoid recursion
+        if command.name != 'help':
+            help_message += f"!{command.name}: {command.help}\n"
+    
+    await ctx.send(help_message)
 
 # Test Command
 @bot.command()
