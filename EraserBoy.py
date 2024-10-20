@@ -64,7 +64,7 @@ def is_reckless():
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send(f"Hello, {ctx.author.mention}. Looks like you either spelled something wrong or are trying an invalid command. Try !help to see the command list.")
+        await ctx.send(f"Hello, {ctx.author.mention}. Looks like you either spelled something wrong or are trying an invalid command. Try !cmdlist to see the command list.")
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send(f"Don't be a bad little thing now, {ctx.author.mention}. Only mommy and daddy allowed.")
 
