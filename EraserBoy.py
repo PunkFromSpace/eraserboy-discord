@@ -112,7 +112,7 @@ async def on_guild_join(guild):
 
 # Help Command
 @bot.command()
-async def help(ctx):
+async def cmdlist(ctx):
     """List all available commands and their descriptions."""
     help_message = "Here are the available commands:\n\n"
     
