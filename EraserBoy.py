@@ -118,7 +118,7 @@ async def cmdlist(ctx):
     
     for command in bot.commands:
         # Ignore the help command to avoid recursion
-        if command.name != 'help':
+        if command.name != 'cmdlist':
             help_message += f"!{command.name}: {command.help}\n"
     
     await ctx.send(help_message)
