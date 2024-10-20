@@ -127,12 +127,14 @@ async def cmdlist(ctx):
 @bot.command()
 @commands.cooldown(1, 15, commands.BucketType.user)
 async def hello(ctx):
+    """Tests if the bot is online. And a nice little greeting."""
     await ctx.send(f'Hello, {ctx.author.mention}! EraserBoy is ONLINE.')
 
 # Test Command - For Reckless
 @bot.command()
 @is_reckless()
 async def hi(ctx):
+    """Tests if the bot is online, but ONLY for RecklessDevil."""
     await ctx.send(f'Heyyyy, {ctx.author.mention}! EraserBoy is ONLINE. How are you, sweetheart?')
 
 @hi.error
@@ -145,12 +147,14 @@ async def hi_error(ctx, error):
 @commands.cooldown(1, 15, commands.BucketType.user)
 @commands.has_permissions(administrator = True)
 async def badboy(ctx):
+    """For when the bot's been a bad little shit."""
     await ctx.send(f'I\'m so sorry. I deserve punishment. Please punish me. I need it to become a good little thing. I\'m so sorry, master. I deserve this.')
 
 @bot.command()
 @commands.cooldown(1, 15, commands.BucketType.user)
 @commands.has_permissions(administrator = True)
 async def spankbadboy(ctx):
+    """To punish the bad boy"""
     await ctx.send("OWA! OWA! OWA OWA OWA! YES, I DESERVE THIS! OWA! I'M SORRY!")
 
 # Good Boy
@@ -158,17 +162,20 @@ async def spankbadboy(ctx):
 @commands.cooldown(1, 15, commands.BucketType.user)
 @commands.has_permissions(administrator = True)
 async def goodboy(ctx):
+    """For undeserved praise."""
     await ctx.send(f"Thank you :3\nI don't deserve that kinda recognition but it's nice hehehehe")
 
 @bot.command()
 @commands.cooldown(1, 15, commands.BucketType.user)
 @commands.has_permissions(administrator = True)
 async def headpatgoodboy(ctx):
+    """For undeserved reward."""
     await ctx.send(f"HEHEHEHEHEHE THANK U <3")
 
 # You Bad Little Thing
 @bot.command()
 async def badlittlething(ctx, member: discord.Member, *, reason=None ):
+    """To call out your fellow server members on their bad behavior. Can't be caught with your hand in the cookie jar and NOT get in trouble now, can you?"""
     if member is None:
         await ctx.send(f"Hello, {ctx.author.mention}. Please mention a member to call out for their behavior.")
     if reason is None:
@@ -181,7 +188,7 @@ async def badlittlething(ctx, member: discord.Member, *, reason=None ):
 @bot.command()
 @commands.has_permissions(administrator = True)
 async def purge(ctx, amount: int):
-    """Purges any specified number of messaged. Not specifying purges last 5 messages."""
+    """Purges any specified number of messages."""
     await ctx.channel.purge(limit=amount + 1)
     await ctx.send(f'{amount} previous messages deleted by {ctx.author.mention}!')
 '''
