@@ -11,6 +11,7 @@ load_dotenv()
 
 bot_token = os.getenv('ERASERBOY_TOKEN')
 log_server_id = os.getenv('LOGSERVER_ID')
+reckless_devil_id = os.getenv('RECKLESS_DEVIL_ID')
 
 # Print the loaded values for debugging
 #print(f"Bot Token: {bot_token}")
@@ -52,6 +53,12 @@ async def on_ready():
 async def global_check_admin(ctx):
     return ctx.author.guild_permissions.administrator
 '''
+
+# Restriction to Reckless Check
+def is_reckless():
+    def predicate(ctx):
+        return ctx.author.id == reckless_devil_id
+    return commands.check(predicate)
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -105,6 +112,13 @@ async def on_guild_join(guild):
 @commands.cooldown(1, 15, commands.BucketType.user)
 async def hello(ctx):
     await ctx.send(f'Hello, {ctx.author.mention}! EraserBoy is ONLINE.')
+
+# Test Command - For Reckless
+@bot.command()
+@commands.cooldown(1, 15, commands.BucketType.user)
+@is_reckless()
+async def hi(ctx):
+    await ctx.send(f'Heyyyy, {ctx.author.mention}! EraserBoy is ONLINE. How are you, sweetheart?')
 
 # Bad Boy
 @bot.command()
