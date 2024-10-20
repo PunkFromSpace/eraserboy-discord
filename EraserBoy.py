@@ -11,7 +11,7 @@ load_dotenv()
 
 bot_token = os.getenv('ERASERBOY_TOKEN')
 log_server_id = os.getenv('LOGSERVER_ID')
-reckless_devil_id = os.getenv('RECKLESS_DEVIL_ID')
+reckless_devil_id = int(os.getenv('RECKLESS_DEVIL_ID'))
 
 # Print the loaded values for debugging
 #print(f"Bot Token: {bot_token}")
@@ -57,6 +57,7 @@ async def global_check_admin(ctx):
 # Restriction to Reckless Check
 def is_reckless():
     def predicate(ctx):
+        print(f"Checking user ID: {ctx.author.id} against {reckless_devil_id}")  # Debugging output
         return ctx.author.id == reckless_devil_id
     return commands.check(predicate)
 
