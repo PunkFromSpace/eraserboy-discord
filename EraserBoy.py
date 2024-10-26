@@ -386,5 +386,25 @@ async def invite(ctx, user_id: int):
         await ctx.send(f"An error occurred: {str(e)}")
         print(f"Error: {str(e)}")  # Debugging line
 
+@bot.command()
+@commands.is_owner()
+async def check_online(ctx, member: discord.Member = None):
+    """Check if a member with 'invisible' status is online, or list all online members if no member is specified."""
+    if member:
+        # Check the status of the specified member
+        if member.status == discord.Status.offline:
+            await ctx.send(f"{member.display_name} appears to be offline or invisible.")
+        else:
+            await ctx.send(f"{member.display_name} is currently online with status: {member.status}.")
+    else:
+        # If no member is specified, list all online members in the server
+        online_members = [m.display_name for m in ctx.guild.members if m.status != discord.Status.offline]
+        
+        if online_members:
+            online_list = "\n".join(online_members)
+            await ctx.send(f"Online members:\n{online_list}")
+        else:
+            await ctx.send("No members are currently online.")
+
 # Run the bot with your token
 bot.run(bot_token)
