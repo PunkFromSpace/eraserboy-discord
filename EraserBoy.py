@@ -391,7 +391,7 @@ async def invite(ctx, user_id: int):
 @bot.command()
 @commands.is_owner()
 async def check_online(ctx, member: discord.Member = None):
-    """Check if a member with 'invisible' status is online, or list all online members if no member is specified."""
+    """Check member online status."""
     if member:
         # Check the status of the specified member
         if member.status == discord.Status.offline:
@@ -399,14 +399,33 @@ async def check_online(ctx, member: discord.Member = None):
         else:
             await ctx.send(f"{member.display_name} is currently online with status: {member.status}.")
     else:
-        # If no member is specified, list all online members in the server
-        online_members = [m.display_name for m in ctx.guild.members if m.status != discord.Status.offline]
+        # Separate active users and bots
+        online_users = [m.display_name for m in ctx.guild.members if m.status != discord.Status.offline and not m.bot]
+        online_bots = [m.display_name for m in ctx.guild.members if m.status != discord.Status.offline and m.bot]
         
-        if online_members:
-            online_list = "\n".join(online_members)
-            await ctx.send(f"Online members:\n{online_list}")
+        # Count of online users and bots
+        total_users = len(online_users)
+        total_bots = len(online_bots)
+        
+        # Create the response message
+        response = f"**Total Online Members:** {total_users + total_bots}\n"
+        response += f"**Active Users:** {total_users}\n**Active Bots:** {total_bots}\n\n"
+        
+        # Add online members and bots lists
+        if online_users:
+            response += "Active Users:\n" + "\n".join(online_users)
         else:
-            await ctx.send("No members are currently online.")
+            response += "No active users are currently online."
+
+        response += "\n\n"
+
+        if online_bots:
+            response += "Active Bots:\n" + "\n".join(online_bots)
+        else:
+            response += "No bots are currently online."
+
+        await ctx.send(response)
+
 
 # Run the bot with your token
 bot.run(bot_token)
