@@ -21,6 +21,8 @@ reckless_devil_id = int(os.getenv('RECKLESS_DEVIL_ID'))
 intents = discord.Intents.default()
 intents.message_content = True 
 intents.guilds = True
+intents.presences = True
+intents.members = True
 
 
 # Load server_to_log_channel from JSON
