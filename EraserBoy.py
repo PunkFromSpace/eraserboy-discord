@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 import json
 from dotenv import load_dotenv
@@ -332,22 +332,33 @@ async def ban(ctx, member: discord.Member, *, reason=None):
 async def timeout(ctx, member: discord.Member, duration: str, *, reason=None):
     """Timeout a member for a specified duration."""
     time_units = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400, 'y': 31536000}  # Seconds in each unit
-    if duration[-1] in time_units:
-        unit = duration[-1]
-        try:
+    
+    try:
+        if duration[-1] in time_units:
+            unit = duration[-1]
             value = int(duration[:-1])
             seconds = value * time_units[unit]
 
             if 0 < seconds <= 31536000:  # Limit to 1 year
-                timeout_until = datetime.utcnow() + timedelta(seconds=seconds)
-                await member.edit(timed_out_until=timeout_until, reason=reason)
+                timeout_until = datetime.now(timezone.utc) + timedelta(seconds=seconds)
+                print(f"Timeout until: {timeout_until}")  # Debugging line
+
+                # Force re-fetch the member to ensure we have the latest data
+                fresh_member = await ctx.guild.fetch_member(member.id)
+                await fresh_member.edit(timed_out_until=timeout_until, reason=reason)
+                
                 await ctx.send(f'Timed out {member.mention} for {value} {unit}.')
             else:
                 await ctx.send("Duration must be between 1 second and 1 year.")
-        except ValueError:
-            await ctx.send("Invalid duration format. Use formats like '1m', '12s', '3h', '2d', 'y'.")
-    else:
-        await ctx.send("Invalid duration unit. Use 's', 'm', 'h', 'd', or 'y'.")
+        else:
+            await ctx.send("Invalid duration unit. Use 's', 'm', 'h', 'd', or 'y'.")
+
+    except ValueError:
+        await ctx.send("Invalid duration format. Use formats like '1m', '12s', '3h', '2d', or '1y'.")
+    except discord.Forbidden:
+        await ctx.send("I don’t have permission to timeout this member.")
+    except Exception as e:
+        await ctx.send(f"An unexpected error occurred: {str(e)}")
 
 # Remove Timeout Command (Unmute)
 @bot.command()
@@ -371,7 +382,7 @@ async def lock(ctx, channel: discord.TextChannel = None):
     overwrite = channel.overwrites_for(ctx.guild.default_role)
     overwrite.send_messages = False  # Set send_messages to False for @everyone
     await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-    await ctx.send(f"{channel.mention} has been locked. 🔒")
+    await channel.send(f"{channel.mention} has been locked. 🔒")
 
 # Unlock Channel
 @bot.command()
