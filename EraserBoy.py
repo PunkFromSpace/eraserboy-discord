@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from datetime import timedelta
+from datetime import datetime, timedelta
 import os
 import json
 from dotenv import load_dotenv
@@ -338,8 +338,9 @@ async def timeout(ctx, member: discord.Member, duration: str, *, reason=None):
             value = int(duration[:-1])
             seconds = value * time_units[unit]
 
-            if seconds > 0 and seconds <= 31536000:  # Limit to 1 year
-                await member.timeout(seconds=seconds, reason=reason)
+            if 0 < seconds <= 31536000:  # Limit to 1 year
+                timeout_until = datetime.utcnow() + timedelta(seconds=seconds)
+                await member.edit(timed_out_until=timeout_until, reason=reason)
                 await ctx.send(f'Timed out {member.mention} for {value} {unit}.')
             else:
                 await ctx.send("Duration must be between 1 second and 1 year.")
@@ -360,6 +361,28 @@ async def remove_timeout(ctx, member: discord.Member):
         await ctx.send("I don't have permission to remove the timeout for this member.")
     except Exception as e:
         await ctx.send(f"An error occurred: {str(e)}")
+
+# Lock Channel
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def lock(ctx, channel: discord.TextChannel = None):
+    """Lock a channel to prevent everyone from sending messages."""
+    channel = channel or ctx.channel  # Default to the current channel if no channel is specified
+    overwrite = channel.overwrites_for(ctx.guild.default_role)
+    overwrite.send_messages = False  # Set send_messages to False for @everyone
+    await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+    await ctx.send(f"{channel.mention} has been locked. 🔒")
+
+# Unlock Channel
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def unlock(ctx, channel: discord.TextChannel = None):
+    """Unlock a channel to allow everyone to send messages again."""
+    channel = channel or ctx.channel  # Default to the current channel if no channel is specified
+    overwrite = channel.overwrites_for(ctx.guild.default_role)
+    overwrite.send_messages = None  # Set send_messages to None to revert to default
+    await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+    await ctx.send(f"{channel.mention} has been unlocked. 🔓")
 
 
 # Invite a User Command
